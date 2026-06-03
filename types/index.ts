@@ -10,6 +10,7 @@ export interface Category {
   id: string;
   name: string;
   icon: string;
+  daily_budget: number | null;
   created_at: string;
 }
 

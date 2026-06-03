@@ -12,6 +12,7 @@ import { Trash2, AlertCircle } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { format } from 'date-fns'
 import { Category, ExpenseWithCategory } from '@/types'
+import { toast } from 'sonner'
 
 export function ExpenseManager({ categories, initialExpenses }: { categories: Category[], initialExpenses: ExpenseWithCategory[] }) {
   const router = useRouter()
@@ -46,6 +47,25 @@ export function ExpenseManager({ categories, initialExpenses }: { categories: Ca
         setNote('')
         setCategoryId('')
         router.refresh()
+
+        // Check budget status for the category
+        try {
+          const budgetRes = await fetch('/api/budget/stats')
+          const budgetStats = await budgetRes.json()
+          const categoryBudget = budgetStats.find((b: any) => b.categoryId === categoryId)
+          
+          if (categoryBudget) {
+            const categoryName = categories.find(c => c.id === categoryId)?.name || 'this category'
+            if (categoryBudget.status === 'danger') {
+              toast.error(`🚨 You've exceeded today's ${categoryName} budget!`)
+            } else if (categoryBudget.status === 'warning') {
+              toast.warning(`⚠️ You've used 80%+ of today's ${categoryName} budget`)
+            }
+          }
+        } catch (budgetError) {
+          // Silently ignore budget check errors
+          console.error('Budget check failed:', budgetError)
+        }
       } else {
         const data = await res.json()
         setErrorMsg(data.error || 'Failed to add expense')
