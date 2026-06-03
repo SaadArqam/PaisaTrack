@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase-server'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { DashboardChart } from '@/components/DashboardChart'
+import { StipendWidget } from '@/components/StipendWidget'
 import { startOfMonth, endOfMonth, format } from 'date-fns'
 import { TrendingUp, TrendingDown, Activity, Wallet } from 'lucide-react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -108,6 +109,8 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      <StipendWidget />
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
         <div className="col-span-2 lg:col-span-3 space-y-4">

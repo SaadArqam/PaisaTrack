@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Wallet, LayoutDashboard, PlusCircle, Tags, ReceiptText } from 'lucide-react'
+import { Wallet, LayoutDashboard, PlusCircle, Tags, ReceiptText, Settings } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const navItems = [
@@ -10,6 +10,7 @@ const navItems = [
   { name: 'Add Balance', href: '/balance', icon: PlusCircle },
   { name: 'Categories', href: '/categories', icon: Tags },
   { name: 'Expenses', href: '/expenses', icon: ReceiptText },
+  { name: 'Settings', href: '/settings', icon: Settings },
 ]
 
 export function Sidebar() {

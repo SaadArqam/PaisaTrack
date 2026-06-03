@@ -37,3 +37,26 @@ export interface Summary {
     total: number;
   }[];
 }
+
+export interface StipendConfig {
+  id: string;
+  amount: number;
+  credit_day: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface StipendStats {
+  stipendAmount: number;
+  creditDay: number;
+  daysUntilNextStipend: number;
+  daysElapsed: number;
+  totalDaysInCycle: number;
+  amountSpentThisCycle: number;
+  balanceLeft: number;
+  safeSpendPerDay: number;
+  actualSpendPerDay: number;
+  projectedBalanceOnPayday: number;
+  isOverspending: boolean;
+  willRunOut: boolean;
+}
