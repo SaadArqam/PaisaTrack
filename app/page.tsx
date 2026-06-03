@@ -1,65 +1,167 @@
-import Image from "next/image";
+import { createClient } from '@/lib/supabase-server'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { DashboardChart } from '@/components/DashboardChart'
+import { startOfMonth, endOfMonth, format } from 'date-fns'
+import { TrendingUp, TrendingDown, Activity, Wallet } from 'lucide-react'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
-export default function Home() {
+export const dynamic = 'force-dynamic'
+
+export default async function DashboardPage() {
+  const supabase = await createClient()
+  
+  // Fetch summary data
+  const { data: credits } = await supabase.from('balance_entries').select('amount').eq('type', 'credit')
+  const { data: debits } = await supabase.from('balance_entries').select('amount').eq('type', 'debit')
+  const { data: allExpenses } = await supabase.from('expenses').select('amount, date, category:categories(id, name, icon)')
+  
+  const totalCredited = credits?.reduce((sum, item) => sum + Number(item.amount), 0) || 0
+  const totalDebited = debits?.reduce((sum, item) => sum + Number(item.amount), 0) || 0
+  const totalExpenses = allExpenses?.reduce((sum, item) => sum + Number(item.amount), 0) || 0
+  
+  const totalBalance = totalCredited - totalDebited - totalExpenses
+
+  // Current month stats
+  const now = new Date()
+  const monthStart = startOfMonth(now)
+  const monthEnd = endOfMonth(now)
+  
+  let totalSpentThisMonth = 0
+  let transactionCount = 0
+  const categoryTotals: Record<string, { name: string, icon: string, total: number }> = {}
+
+  allExpenses?.forEach((expense: any) => {
+    const expDate = new Date(expense.date)
+    if (expDate >= monthStart && expDate <= monthEnd) {
+      const amt = Number(expense.amount)
+      totalSpentThisMonth += amt
+      transactionCount += 1
+      
+      const cat = expense.category
+      if (cat) {
+        if (!categoryTotals[cat.id]) {
+          categoryTotals[cat.id] = { name: cat.name, icon: cat.icon, total: 0 }
+        }
+        categoryTotals[cat.id].total += amt
+      }
+    }
+  })
+
+  const spendingByCategory = Object.values(categoryTotals).sort((a, b) => b.total - a.total)
+
+  // Last 5 expenses
+  const { data: recentExpenses } = await supabase
+    .from('expenses')
+    .select('*, category:categories(*)')
+    .order('date', { ascending: false })
+    .limit(5)
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="p-6 md:p-10 space-y-8 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <p className="text-muted-foreground mt-2">Overview of your finances</p>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="bg-gradient-to-br from-primary/90 to-primary text-primary-foreground border-none shadow-lg lg:col-span-1 md:col-span-2 overflow-hidden relative">
+          <div className="absolute right-0 top-0 opacity-10 transform translate-x-1/4 -translate-y-1/4">
+            <Wallet className="w-32 h-32" />
+          </div>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium opacity-90">Current Balance</CardTitle>
+            <Wallet className="h-5 w-5 opacity-90" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-4xl font-bold tracking-tight">₹{totalBalance.toLocaleString('en-IN')}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-md hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Credited</CardTitle>
+            <TrendingUp className="h-4 w-4 text-emerald-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">₹{totalCredited.toLocaleString('en-IN')}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-md hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Spent This Month</CardTitle>
+            <TrendingDown className="h-4 w-4 text-rose-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">₹{totalSpentThisMonth.toLocaleString('en-IN')}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-md hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Transactions</CardTitle>
+            <Activity className="h-4 w-4 text-blue-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{transactionCount}</div>
+            <p className="text-xs text-muted-foreground mt-1">This month</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
+        <div className="col-span-2 lg:col-span-3 space-y-4">
+          <h2 className="text-xl font-semibold tracking-tight">Spending by Category</h2>
+          <DashboardChart data={spendingByCategory} />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="col-span-2 lg:col-span-4 space-y-4">
+          <h2 className="text-xl font-semibold tracking-tight">Recent Expenses</h2>
+          <Card className="shadow-md border-muted/50 overflow-hidden">
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader className="bg-muted/30">
+                  <TableRow>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Note</TableHead>
+                    <TableHead className="text-right">Amount</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {recentExpenses && recentExpenses.length > 0 ? (
+                    recentExpenses.map((expense) => (
+                      <TableRow key={expense.id} className="hover:bg-muted/50 transition-colors">
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg bg-background rounded-full p-1 shadow-sm border">{expense.category?.icon}</span>
+                            <span className="font-medium">{expense.category?.name}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-muted-foreground whitespace-nowrap">
+                          {format(new Date(expense.date), 'dd MMM yyyy')}
+                        </TableCell>
+                        <TableCell className="max-w-[150px] truncate">
+                          {expense.note || '-'}
+                        </TableCell>
+                        <TableCell className="text-right font-medium">
+                          ₹{Number(expense.amount).toLocaleString('en-IN')}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center h-32 text-muted-foreground">
+                        No recent expenses
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
         </div>
-      </main>
+      </div>
     </div>
-  );
+  )
 }
