@@ -91,14 +91,14 @@ export function ExpenseManager({ categories, initialExpenses }: { categories: Ca
     }
   }
 
-  // Filter expenses
+  // Filter and sort expenses
   const filteredExpenses = initialExpenses.filter(expense => {
     const expDate = expense.date.slice(0, 7) // YYYY-MM
     const matchMonth = filterMonth ? expDate === filterMonth : true
     const matchCategory = filterCategory === 'all' ? true : expense.category_id === filterCategory
     
     return matchMonth && matchCategory
-  })
+  }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
   const totalFiltered = filteredExpenses.reduce((sum, exp) => sum + Number(exp.amount), 0)
 
