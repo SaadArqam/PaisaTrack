@@ -14,6 +14,7 @@ export function AddBalanceForm() {
   const [loading, setLoading] = useState(false)
   const [amount, setAmount] = useState('')
   const [note, setNote] = useState('')
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0])
   const [errorMsg, setErrorMsg] = useState('')
 
   async function onSubmit(e: React.FormEvent) {
@@ -26,12 +27,13 @@ export function AddBalanceForm() {
       const res = await fetch('/api/balance', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: Number(amount), note, type: 'credit' })
+        body: JSON.stringify({ amount: Number(amount), note, type: 'credit', date })
       })
 
       if (res.ok) {
         setAmount('')
         setNote('')
+        setDate(new Date().toISOString().split('T')[0])
         router.refresh()
       } else {
         const data = await res.json()
@@ -70,6 +72,16 @@ export function AddBalanceForm() {
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="0.00"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="date">Date</Label>
+            <Input
+              id="date"
+              type="date"
+              required
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
             />
           </div>
           <div className="space-y-2">

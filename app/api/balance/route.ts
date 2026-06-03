@@ -5,11 +5,17 @@ export async function POST(request: Request) {
   try {
     const supabase = await createClient()
     const json = await request.json()
-    const { amount, note, type } = json
+    const { amount, note, type, date } = json
+
+    const insertData: Record<string, any> = { amount, note, type }
+    if (date) {
+      // Store the user-selected date as created_at (ISO format)
+      insertData.created_at = new Date(date).toISOString()
+    }
 
     const { data, error } = await supabase
       .from('balance_entries')
-      .insert({ amount, note, type })
+      .insert(insertData)
       .select()
       .single()
 
