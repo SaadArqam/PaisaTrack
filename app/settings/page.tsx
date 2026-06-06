@@ -1,9 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
+import { Settings as SettingsIcon, Save } from 'lucide-react'
 
 export default function SettingsPage() {
   const [amount, setAmount] = useState('')
@@ -30,7 +32,8 @@ export default function SettingsPage() {
     }
   }
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
     setLoading(true)
     setMessage(null)
 
@@ -56,104 +59,95 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="p-6 md:p-10 space-y-10 max-w-3xl">
+    <div className="p-6 md:p-10 space-y-8 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div>
-        <h1 className="swiss-page-heading border-b-4 border-[#FF3000] inline-block pb-2">
-          SETTINGS
+        <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
+          <SettingsIcon className="h-8 w-8" />
+          Settings
         </h1>
+        <p className="text-muted-foreground mt-2">Configure your stipend settings</p>
       </div>
 
-      <div className="space-y-10">
-        <div>
-          <p className="swiss-section-label">01. STIPEND CONFIG</p>
-
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div className="max-w-2xl">
+        <Card className="shadow-md">
+          <CardHeader>
+            <CardTitle>Stipend Configuration</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="amount" className="text-xs font-bold uppercase tracking-widest text-black">
-                  Monthly Stipend Amount (₹)
-                </Label>
+                <Label htmlFor="amount">Monthly Stipend Amount (₹)</Label>
                 <Input
                   id="amount"
                   type="number"
                   placeholder="e.g., 25000"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
+                  required
                   min="0"
                   step="0.01"
+                  className="text-lg"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="creditDay" className="text-xs font-bold uppercase tracking-widest text-black">
-                  Stipend Credit Day (1–31)
-                </Label>
+                <Label htmlFor="creditDay">Stipend Credit Day (1-31)</Label>
                 <Input
                   id="creditDay"
                   type="number"
-                  placeholder="e.g., 1"
+                  placeholder="e.g., 1 for 1st of the month"
                   value={creditDay}
                   onChange={(e) => setCreditDay(e.target.value)}
+                  required
                   min="1"
                   max="31"
+                  className="text-lg"
                 />
+                <p className="text-sm text-muted-foreground">
+                  The day of the month when your stipend arrives
+                </p>
               </div>
-            </div>
 
-            {message && (
-              <div className={`border-l-4 p-3 text-xs uppercase tracking-widest font-bold ${
-                message.type === 'success'
-                  ? 'border-black bg-[#F2F2F2] text-black'
-                  : 'border-[#FF3000] bg-[#F2F2F2] text-[#FF3000]'
-              }`}>
-                {message.text}
+              {message && (
+                <div className={`p-3 rounded-lg ${
+                  message.type === 'success' 
+                    ? 'bg-green-500/10 text-green-500 border border-green-500/20' 
+                    : 'bg-red-500/10 text-red-500 border border-red-500/20'
+                }`}>
+                  {message.text}
+                </div>
+              )}
+
+              <Button type="submit" disabled={loading} className="w-full">
+                <Save className="h-4 w-4 mr-2" />
+                {loading ? 'Saving...' : 'Save Configuration'}
+              </Button>
+            </form>
+
+            {currentConfig && (
+              <div className="mt-6 pt-6 border-t">
+                <h3 className="font-semibold mb-3">Current Configuration</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Monthly Stipend:</span>
+                    <span className="font-medium">₹{Number(currentConfig.amount).toLocaleString('en-IN')}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Credit Day:</span>
+                    <span className="font-medium">{currentConfig.credit_day}{getOrdinalSuffix(currentConfig.credit_day)} of the month</span>
+                  </div>
+                </div>
               </div>
             )}
-
-            <Button
-              onClick={handleSubmit}
-              disabled={loading || !amount || !creditDay}
-              className="w-full h-14 md:h-16"
-              size="lg"
-            >
-              {loading ? 'Saving...' : 'Save Config'}
-            </Button>
-          </div>
-        </div>
-
-        {currentConfig && (
-          <div>
-            <p className="swiss-section-label">CURRENT CONFIG</p>
-            <div className="border-4 border-black p-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div>
-                <p className="text-xs uppercase tracking-widest font-bold text-[#FF3000] mb-1">
-                  Monthly Stipend
-                </p>
-                <p className="font-black text-3xl tracking-tighter">
-                  ₹{Number(currentConfig.amount).toLocaleString('en-IN')}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs uppercase tracking-widest font-bold text-[#FF3000] mb-1">
-                  Credit Day
-                </p>
-                <p className="font-black text-3xl tracking-tighter">
-                  {currentConfig.credit_day}
-                  <span className="text-lg font-bold uppercase tracking-widest ml-1">
-                    {getOrdinalSuffix(currentConfig.credit_day)}
-                  </span>
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   )
 }
 
 function getOrdinalSuffix(n: number) {
-  const s = ['TH', 'ST', 'ND', 'RD']
+  const s = ['th', 'st', 'nd', 'rd']
   const v = n % 100
   return s[(v - 20) % 10] || s[v] || s[0]
 }
