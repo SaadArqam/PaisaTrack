@@ -17,10 +17,11 @@ export default async function ExpensesPage() {
     .order('date', { ascending: false })
 
   return (
-    <div className="p-6 md:p-10 space-y-8 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="p-6 md:p-10 space-y-10 max-w-7xl">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Expenses</h1>
-        <p className="text-muted-foreground mt-2">Track and manage your spending</p>
+        <h1 className="swiss-page-heading border-b-4 border-[#FF3000] inline-block pb-2">
+          EXPENSES
+        </h1>
       </div>
 
       <ExpenseManager categories={categories || []} initialExpenses={expenses || []} />

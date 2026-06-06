@@ -2,11 +2,9 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Trash2, Wallet, X } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -16,6 +14,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Category } from '@/types'
+import { cn } from '@/lib/utils'
 
 export function CategoryList({ initialCategories }: { initialCategories: Category[] }) {
   const router = useRouter()
@@ -97,42 +96,49 @@ export function CategoryList({ initialCategories }: { initialCategories: Categor
 
   return (
     <>
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {initialCategories.map((category) => (
-          <Card key={category.id} className="relative group overflow-hidden shadow-sm hover:shadow-md transition-all">
-            <CardContent className="p-6 flex flex-col items-center justify-center gap-3">
-              <div className="text-4xl bg-muted/50 p-3 rounded-full">{category.icon}</div>
-              <span className="font-medium text-center truncate w-full" title={category.name}>{category.name}</span>
-              
-              {category.daily_budget ? (
-                <div className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-full">
-                  Daily: ₹{Number(category.daily_budget).toLocaleString('en-IN')}
-                </div>
-              ) : (
-                <div className="text-xs text-muted-foreground">No budget set</div>
-              )}
-              
-              <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="h-7 text-xs"
-                  onClick={() => openBudgetDialog(category)}
-                >
-                  <Wallet className="h-3 w-3 mr-1" />
-                  Set Budget
-                </Button>
-                <Button 
-                  variant="destructive" 
-                  size="icon" 
-                  className="h-7 w-7"
-                  onClick={() => setDeleteId(category.id)}
-                >
-                  <Trash2 className="h-3 w-3" />
-                </Button>
+          <div
+            key={category.id}
+            className={cn(
+              "group border-2 border-black bg-white p-8 flex flex-col items-center text-center",
+              "transition-colors duration-150 hover:bg-[#FF3000] hover:text-white hover:border-white"
+            )}
+          >
+            <div className="text-4xl mb-4">{category.icon}</div>
+            <span
+              className="font-bold uppercase tracking-wide truncate w-full"
+              title={category.name}
+            >
+              {category.name}
+            </span>
+
+            {category.daily_budget ? (
+              <div className="mt-3 bg-black text-white uppercase text-xs px-2 py-1 font-bold tracking-widest group-hover:bg-white group-hover:text-black transition-colors duration-150">
+                ₹{Number(category.daily_budget).toLocaleString('en-IN')} / DAY
               </div>
-            </CardContent>
-          </Card>
+            ) : (
+              <div className="mt-3 text-xs uppercase tracking-widest text-muted-foreground group-hover:text-white/70">
+                No Budget
+              </div>
+            )}
+
+            <Button
+              variant="outline"
+              className="w-full mt-4 group-hover:bg-white group-hover:text-black group-hover:border-white"
+              onClick={() => openBudgetDialog(category)}
+            >
+              Set Budget
+            </Button>
+
+            <button
+              type="button"
+              className="mt-3 text-[#FF3000] uppercase text-xs tracking-widest font-bold group-hover:text-white transition-colors duration-150 min-h-[44px]"
+              onClick={() => setDeleteId(category.id)}
+            >
+              Delete
+            </button>
+          </div>
         ))}
       </div>
 
@@ -141,7 +147,7 @@ export function CategoryList({ initialCategories }: { initialCategories: Categor
           <DialogHeader>
             <DialogTitle>Delete Category</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete this category? This action cannot be undone. Expenses linked to this category might be affected.
+              Are you sure you want to delete this category? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="mt-4 gap-2 sm:gap-0">
@@ -165,7 +171,9 @@ export function CategoryList({ initialCategories }: { initialCategories: Categor
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="budget">Daily Budget (₹)</Label>
+              <Label htmlFor="budget" className="text-xs font-bold uppercase tracking-widest">
+                Daily Budget (₹)
+              </Label>
               <Input
                 id="budget"
                 type="number"

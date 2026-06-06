@@ -2,12 +2,9 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { AlertCircle } from 'lucide-react'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 
 export function AddBalanceForm() {
   const router = useRouter()
@@ -17,8 +14,7 @@ export function AddBalanceForm() {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0])
   const [errorMsg, setErrorMsg] = useState('')
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault()
+  async function onSubmit() {
     setErrorMsg('')
     if (!amount || isNaN(Number(amount))) return
 
@@ -48,57 +44,60 @@ export function AddBalanceForm() {
   }
 
   return (
-    <Card className="shadow-md">
-      <CardHeader>
-        <CardTitle>Add Balance</CardTitle>
-        <CardDescription>Credit money to your wallet</CardDescription>
-      </CardHeader>
-      <CardContent>
-        {errorMsg && (
-          <Alert variant="destructive" className="mb-4 py-2">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription className="ml-2">{errorMsg}</AlertDescription>
-          </Alert>
-        )}
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="amount">Amount (₹)</Label>
-            <Input 
-              id="amount" 
-              type="number" 
-              step="0.01" 
-              min="1"
-              required 
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="0.00"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="date">Date</Label>
-            <Input
-              id="date"
-              type="date"
-              required
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="note">Note (Optional)</Label>
-            <Input 
-              id="note" 
-              type="text" 
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              placeholder="e.g., Salary, Gift"
-            />
-          </div>
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Adding...' : 'Add Money'}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+    <div>
+      <p className="swiss-section-label">01. CREDIT ENTRY</p>
+      {errorMsg && (
+        <div className="mb-4 border-l-4 border-[#FF3000] bg-[#F2F2F2] p-3 text-xs uppercase tracking-widest font-bold">
+          {errorMsg}
+        </div>
+      )}
+      <div className="space-y-6 max-w-lg">
+        <div className="space-y-2">
+          <Label htmlFor="amount" className="text-xs font-bold uppercase tracking-widest text-black">
+            Amount (₹)
+          </Label>
+          <Input
+            id="amount"
+            type="number"
+            step="0.01"
+            min="1"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            placeholder="0.00"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="date" className="text-xs font-bold uppercase tracking-widest text-black">
+            Date
+          </Label>
+          <Input
+            id="date"
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="note" className="text-xs font-bold uppercase tracking-widest text-black">
+            Note (Optional)
+          </Label>
+          <Input
+            id="note"
+            type="text"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="e.g., Salary, Gift"
+          />
+        </div>
+        <Button
+          onClick={onSubmit}
+          className="w-full h-14 md:h-16"
+          size="lg"
+          disabled={loading || !amount}
+        >
+          {loading ? 'Adding...' : 'Add Money'}
+        </Button>
+      </div>
+    </div>
   )
 }
