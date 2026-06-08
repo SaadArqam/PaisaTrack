@@ -60,7 +60,7 @@ export default async function DashboardPage() {
     .limit(5)
 
   return (
-    <div className="p-6 md:p-10 space-y-8 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="p-4 md:p-8 space-y-8 max-w-7xl mx-auto w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="px-6 pt-6 pb-2">
         <h1 className="text-2xl font-bold tracking-tight">
           Paisa<span style={{color: '#E8B84B'}}>Track</span>

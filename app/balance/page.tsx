@@ -16,18 +16,18 @@ export default async function BalancePage() {
     .order('created_at', { ascending: false })
 
   return (
-    <div className="p-6 md:p-10 space-y-8 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="px-6 pt-6 pb-2">
+    <div className="p-4 md:p-8 space-y-8 max-w-7xl mx-auto w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="pt-2 pb-2">
         <h1 className="text-2xl font-bold tracking-tight">Balance</h1>
         <p className="text-muted-foreground mt-2">Manage your wallet balance and view history</p>
       </div>
 
-      <div className="flex flex-col gap-8">
-        <div className="w-full">
+      <div className="grid gap-8 lg:grid-cols-3">
+        <div className="lg:col-span-1">
           <AddBalanceForm />
         </div>
         
-        <div className="w-full space-y-4">
+        <div className="lg:col-span-2 space-y-4">
           <Card className="shadow-md border-muted/50">
             <CardHeader>
               <CardTitle>Balance History</CardTitle>

@@ -59,8 +59,8 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="p-6 md:p-10 space-y-8 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="px-6 pt-6 pb-2">
+    <div className="p-4 md:p-8 space-y-8 max-w-7xl mx-auto w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="pt-2 pb-2">
         <h1 className="text-2xl font-bold tracking-tight flex items-center gap-3">
           <SettingsIcon className="h-8 w-8" />
           Settings

@@ -16,7 +16,10 @@ const geistMono = Geist_Mono({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#0C0C0C",
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#0C0C0C" },
+    { media: "(prefers-color-scheme: light)", color: "#0C0C0C" },
+  ],
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -24,15 +27,44 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "PaisaTrack - Personal Expense Manager",
-  description: "Track your expenses and manage your balance efficiently.",
+  title: {
+    default: "PaisaTrack",
+    template: "%s | PaisaTrack",
+  },
+  description:
+    "Track your daily expenses, manage your balance, set budgets, and stay on top of recurring payments.",
+  applicationName: "PaisaTrack",
+  authors: [{ name: "PaisaTrack" }],
+  keywords: ["expense tracker", "budget", "finance", "personal finance", "spending tracker"],
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
+    statusBarStyle: "black-translucent",
     title: "PaisaTrack",
+    startupImage: ["/apple-touch-icon.png"],
+  },
+  openGraph: {
+    type: "website",
+    siteName: "PaisaTrack",
+    title: "PaisaTrack - Personal Expense Manager",
+    description: "Track expenses, manage balance, and stay on budget.",
+  },
+  twitter: {
+    card: "summary",
+    title: "PaisaTrack",
+    description: "Track expenses, manage balance, and stay on budget.",
   },
   icons: {
-    apple: "/apple-icon.png",
+    icon: [
+      { url: "/icon-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    shortcut: "/icon-192x192.png",
+  },
+  formatDetection: {
+    telephone: false,
   },
 };
 
