@@ -1,14 +1,14 @@
 'use client'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Wallet, Tag, Receipt, Settings } from 'lucide-react'
+import { Home, Wallet, Tag, Receipt, RefreshCw } from 'lucide-react'
 
 const links = [
   { href: '/', icon: Home, label: 'Home' },
   { href: '/balance', icon: Wallet, label: 'Balance' },
   { href: '/categories', icon: Tag, label: 'Tags' },
   { href: '/expenses', icon: Receipt, label: 'Expenses' },
-  { href: '/settings', icon: Settings, label: 'Settings' },
+  { href: '/recurring', icon: RefreshCw, label: 'Repeat' },
 ]
 
 export default function BottomNav() {

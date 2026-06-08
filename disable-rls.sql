@@ -5,6 +5,7 @@ ALTER TABLE categories DISABLE ROW LEVEL SECURITY;
 ALTER TABLE expenses DISABLE ROW LEVEL SECURITY;
 ALTER TABLE balance_entries DISABLE ROW LEVEL SECURITY;
 ALTER TABLE stipend_config DISABLE ROW LEVEL SECURITY;
+ALTER TABLE recurring_expenses DISABLE ROW LEVEL SECURITY;
 
 -- Optional: If you want to drop RLS completely (but disable is usually enough)
 -- ALTER TABLE categories NO FORCE ROW LEVEL SECURITY;

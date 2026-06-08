@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { DashboardChart } from '@/components/DashboardChart'
 import { StipendWidget } from '@/components/StipendWidget'
 import { BudgetOverview } from '@/components/BudgetOverview'
+import { RecurringSection } from '@/components/RecurringSection'
 import { startOfMonth, endOfMonth, format } from 'date-fns'
 import { TrendingUp, TrendingDown, Activity, Wallet } from 'lucide-react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -116,6 +117,8 @@ export default async function DashboardPage() {
       </div>
 
       <StipendWidget />
+
+      <RecurringSection />
 
       <BudgetOverview />
 

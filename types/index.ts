@@ -61,3 +61,21 @@ export interface StipendStats {
   isOverspending: boolean;
   willRunOut: boolean;
 }
+
+export interface RecurringExpense {
+  id: string
+  name: string
+  amount: number
+  category_id: string | null
+  frequency: 'weekly' | 'monthly' | 'custom'
+  custom_days: number | null
+  next_due_date: string
+  is_active: boolean
+  created_at: string
+  categories?: { name: string; icon: string }
+}
+
+export interface RecurringWithStatus extends RecurringExpense {
+  days_until_due: number
+  status: 'overdue' | 'urgent' | 'upcoming' | 'normal'
+}
