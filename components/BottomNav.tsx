@@ -1,43 +1,31 @@
 'use client'
-
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, Wallet, Tag, Receipt, Settings } from 'lucide-react'
-import { cn } from '@/lib/utils'
 
-const navItems = [
-  { name: 'Home', href: '/', icon: Home },
-  { name: 'Wallet', href: '/balance', icon: Wallet },
-  { name: 'Tags', href: '/categories', icon: Tag },
-  { name: 'Receipt', href: '/expenses', icon: Receipt },
-  { name: 'Settings', href: '/settings', icon: Settings },
+const links = [
+  { href: '/', icon: Home, label: 'Home' },
+  { href: '/balance', icon: Wallet, label: 'Balance' },
+  { href: '/categories', icon: Tag, label: 'Tags' },
+  { href: '/expenses', icon: Receipt, label: 'Expenses' },
+  { href: '/settings', icon: Settings, label: 'Settings' },
 ]
 
-export function BottomNav() {
-  const pathname = usePathname()
-
+export default function BottomNav() {
+  const path = usePathname()
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0C0C0C] border-t border-[#181818] h-16 grid grid-cols-5">
-      {navItems.map((item) => {
-        const isActive = pathname === item.href
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 grid grid-cols-5 border-t border-border"
+      style={{ height: '60px', backgroundColor: '#0C0C0C' }}>
+      {links.map(({ href, icon: Icon, label }) => {
+        const active = path === href
         return (
-          <Link
-            key={item.href}
-            href={item.href}
-            className="flex flex-col items-center justify-center gap-1 cursor-pointer transition-all duration-150"
-          >
-            <item.icon
-              size={20}
-              strokeWidth={1.5}
-              className={isActive ? "text-[#E8B84B]" : "text-[#2E2E2E]"}
-            />
-            <span
-              className={cn(
-                "text-[9px] uppercase tracking-[0.5px] font-500",
-                isActive ? "text-[#E8B84B]" : "text-[#2E2E2E]"
-              )}
-            >
-              {item.name}
+          <Link key={href} href={href}
+            className="flex flex-col items-center justify-center gap-1">
+            <Icon size={20} strokeWidth={1.5}
+              color={active ? '#E8B84B' : '#3A3A3A'} />
+            <span className="text-[9px] uppercase tracking-wide font-medium"
+              style={{ color: active ? '#E8B84B' : '#3A3A3A' }}>
+              {label}
             </span>
           </Link>
         )
