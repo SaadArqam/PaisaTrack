@@ -59,10 +59,14 @@ export default async function DashboardPage() {
     .limit(5)
 
   return (
-    <div className="p-6 md:p-10 space-y-8 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Overview of your finances</p>
+    <div className="p-6 md:p-10 space-y-8 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="px-6 pt-6 pb-2">
+        <h1 className="text-2xl font-bold tracking-tight">
+          Paisa<span style={{color: '#E8B84B'}}>Track</span>
+        </h1>
+        <p className="text-sm text-muted-foreground mt-0.5">
+          {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
+        </p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
