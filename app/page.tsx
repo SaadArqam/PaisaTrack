@@ -62,11 +62,11 @@ export default async function DashboardPage() {
     <div className="p-6 md:p-10 space-y-8 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div>
         <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground mt-2">Overview of your finances</p>
+        <p className="text-sm text-muted-foreground">Overview of your finances</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="shadow-lg lg:col-span-1 md:col-span-2 overflow-hidden relative">
+        <Card className="shadow-lg lg:col-span-1 md:col-span-2 overflow-hidden relative flex flex-col justify-between h-full min-h-[100px]">
           <div className="absolute right-0 top-0 opacity-10 transform translate-x-1/4 -translate-y-1/4">
             <Wallet className="w-32 h-32" />
           </div>
@@ -75,11 +75,11 @@ export default async function DashboardPage() {
             <Wallet className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-4xl font-bold tracking-tight">₹{totalBalance.toLocaleString('en-IN')}</div>
+            <div className="font-mono text-4xl font-semibold tracking-tight">₹{totalBalance.toLocaleString('en-IN')}</div>
           </CardContent>
         </Card>
 
-        <Card className="shadow-md hover:shadow-lg transition-shadow">
+        <Card className="shadow-md hover:shadow-lg transition-shadow flex flex-col justify-between h-full min-h-[100px]">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Total Credited</CardTitle>
             <TrendingUp className="h-4 w-4 text-emerald-500" />
@@ -89,7 +89,7 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-md hover:shadow-lg transition-shadow">
+        <Card className="shadow-md hover:shadow-lg transition-shadow flex flex-col justify-between h-full min-h-[100px]">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Spent This Month</CardTitle>
             <TrendingDown className="h-4 w-4 text-rose-500" />
@@ -99,7 +99,7 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-md hover:shadow-lg transition-shadow">
+        <Card className="shadow-md hover:shadow-lg transition-shadow flex flex-col justify-between h-full min-h-[100px]">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Transactions</CardTitle>
             <Activity className="h-4 w-4 text-blue-500" />
