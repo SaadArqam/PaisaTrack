@@ -59,9 +59,9 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="p-6 md:p-10 space-y-8 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
+    <div className="p-6 md:p-10 space-y-8 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="px-6 pt-6 pb-2">
+        <h1 className="text-2xl font-bold tracking-tight flex items-center gap-3">
           <SettingsIcon className="h-8 w-8" />
           Settings
         </h1>
@@ -118,7 +118,7 @@ export default function SettingsPage() {
                 </div>
               )}
 
-              <Button type="submit" disabled={loading} className="w-full">
+              <Button type="submit" variant="default" disabled={loading} className="w-full">
                 <Save className="h-4 w-4 mr-2" />
                 {loading ? 'Saving...' : 'Save Configuration'}
               </Button>

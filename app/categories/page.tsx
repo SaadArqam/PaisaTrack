@@ -30,18 +30,18 @@ export default async function CategoriesPage() {
   }
 
   return (
-    <div className="p-6 md:p-10 space-y-8 max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Categories</h1>
+    <div className="p-6 md:p-10 space-y-8 max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="px-6 pt-6 pb-2">
+        <h1 className="text-2xl font-bold tracking-tight">Categories</h1>
         <p className="text-muted-foreground mt-2">Manage your expense categories</p>
       </div>
 
-      <div className="grid gap-8 md:grid-cols-3">
-        <div className="md:col-span-1">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-8">
+        <div className="col-span-2 md:col-span-1">
           <AddCategoryForm />
         </div>
         
-        <div className="md:col-span-2 space-y-4">
+        <div className="col-span-2 space-y-4">
           <CategoryList initialCategories={categories || []} />
         </div>
       </div>
