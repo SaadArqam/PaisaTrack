@@ -4,12 +4,13 @@ import { createClient } from '@/lib/supabase-server'
 export async function GET() {
   try {
     const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
     const { data, error } = await supabase
       .from('recurring_expenses')
-      .select(`
-        *,
-        categories(name, icon)
-      `)
+      .select(`*, categories(name, icon)`)
+      .eq('user_id', user.id)
       .eq('is_active', true)
       .order('next_due_date', { ascending: true })
 
@@ -23,18 +24,22 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
     const json = await request.json()
     const { name, amount, category_id, frequency, custom_days, next_due_date } = json
 
     const { data, error } = await supabase
       .from('recurring_expenses')
-      .insert({ 
-        name, 
-        amount, 
-        category_id, 
-        frequency: frequency || 'monthly', 
-        custom_days: frequency === 'custom' ? (custom_days || 30) : null, 
-        next_due_date 
+      .insert({
+        name,
+        amount,
+        category_id,
+        frequency: frequency || 'monthly',
+        custom_days: frequency === 'custom' ? (custom_days || 30) : null,
+        next_due_date,
+        user_id: user.id,
       })
       .select()
       .single()

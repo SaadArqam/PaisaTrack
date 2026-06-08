@@ -8,6 +8,9 @@ export async function PATCH(
   try {
     const { id } = await params
     const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
     const json = await request.json()
     const { next_due_date, is_active } = json
 
@@ -19,6 +22,7 @@ export async function PATCH(
       .from('recurring_expenses')
       .update(updateData)
       .eq('id', id)
+      .eq('user_id', user.id)
       .select()
       .single()
 
@@ -36,11 +40,14 @@ export async function DELETE(
   try {
     const { id } = await params
     const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const { data, error } = await supabase
       .from('recurring_expenses')
       .update({ is_active: false })
       .eq('id', id)
+      .eq('user_id', user.id)
       .select()
       .single()
 

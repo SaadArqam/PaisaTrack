@@ -6,14 +6,16 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const resolvedParams = await params
-    const id = resolvedParams.id
+    const { id } = await params
     const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     const { error } = await supabase
       .from('expenses')
       .delete()
       .eq('id', id)
+      .eq('user_id', user.id)
 
     if (error) throw error
     return NextResponse.json({ success: true })

@@ -7,11 +7,14 @@ import { RecurringSection } from '@/components/RecurringSection'
 import { startOfMonth, endOfMonth, format } from 'date-fns'
 import { TrendingUp, TrendingDown, Activity, Wallet } from 'lucide-react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import MigrationBanner from '@/components/MigrationBanner'
 
 export const dynamic = 'force-dynamic'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  const userName = (user?.user_metadata?.full_name as string | undefined)?.split(' ')[0] ?? user?.email?.split('@')[0] ?? 'there'
   
   // Fetch summary data
   const { data: credits } = await supabase.from('balance_entries').select('amount').eq('type', 'credit')
@@ -66,9 +69,11 @@ export default async function DashboardPage() {
           Paisa<span style={{color: '#E8B84B'}}>Track</span>
         </h1>
         <p className="text-sm text-muted-foreground mt-0.5">
-          {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
+          Hey {userName} · {new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })}
         </p>
       </div>
+
+      <MigrationBanner />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Card className="shadow-lg lg:col-span-1 md:col-span-2 overflow-hidden relative flex flex-col justify-between h-full min-h-[100px]">

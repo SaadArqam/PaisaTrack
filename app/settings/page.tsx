@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Settings as SettingsIcon, Save } from 'lucide-react'
+import LogoutButton from '@/components/LogoutButton'
 
 export default function SettingsPage() {
   const [amount, setAmount] = useState('')
@@ -139,6 +140,18 @@ export default function SettingsPage() {
                 </div>
               </div>
             )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Account section */}
+      <div className="max-w-2xl">
+        <Card className="shadow-md">
+          <CardHeader>
+            <CardTitle>Account</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <LogoutButton />
           </CardContent>
         </Card>
       </div>

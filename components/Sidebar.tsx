@@ -2,8 +2,10 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { Home, Wallet, Tag, Receipt, RefreshCw, Settings } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { createClient } from '@/lib/supabase'
 
 const mainNavItems = [
   { name: 'Dashboard', href: '/', icon: Home },
@@ -17,6 +19,18 @@ const settingsItem = { name: 'Settings', href: '/settings', icon: Settings }
 
 export function Sidebar() {
   const pathname = usePathname()
+  const [userInitial, setUserInitial] = useState<string | null>(null)
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        const name = user.user_metadata?.full_name as string | undefined
+        const email = user.email ?? ''
+        setUserInitial((name ? name[0] : email[0] ?? '?').toUpperCase())
+      }
+    })
+  }, [])
 
   const linkClass = (isActive: boolean) =>
     cn(
@@ -48,7 +62,7 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="px-2 pb-4 mt-auto">
+      <div className="px-2 pb-3 mt-auto flex flex-col gap-1">
         <Link
           href={settingsItem.href}
           title={settingsItem.name}
@@ -56,6 +70,17 @@ export function Sidebar() {
         >
           <settingsItem.icon size={20} strokeWidth={1.5} />
         </Link>
+
+        {/* User avatar */}
+        {userInitial && (
+          <Link
+            href="/settings"
+            title="Account"
+            className="w-10 h-10 rounded-xl flex items-center justify-center mx-auto bg-[#1C1600] text-[#E8B84B] text-xs font-bold hover:bg-[#251E00] transition-colors"
+          >
+            {userInitial}
+          </Link>
+        )}
       </div>
     </aside>
   )

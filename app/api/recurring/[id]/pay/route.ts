@@ -9,20 +9,23 @@ export async function POST(
   try {
     const { id } = await params
     const supabase = await createClient()
-    
-    // 1. Fetch the recurring expense
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+    // 1. Fetch the recurring expense (scoped to user)
     const { data: recurring, error: fetchError } = await supabase
       .from('recurring_expenses')
       .select('*')
       .eq('id', id)
+      .eq('user_id', user.id)
       .single()
-      
+
     if (fetchError) throw fetchError
     if (!recurring || !recurring.is_active) {
       throw new Error('Recurring expense not found or inactive')
     }
 
-    // 2. Insert into expenses
+    // 2. Insert into expenses with user_id
     const today = new Date().toISOString().split('T')[0]
     const { data: expense, error: insertError } = await supabase
       .from('expenses')
@@ -30,7 +33,8 @@ export async function POST(
         amount: recurring.amount,
         category_id: recurring.category_id,
         date: today,
-        note: recurring.name
+        note: recurring.name,
+        user_id: user.id,
       })
       .select()
       .single()
@@ -49,6 +53,7 @@ export async function POST(
       .from('recurring_expenses')
       .update({ next_due_date: nextDate })
       .eq('id', id)
+      .eq('user_id', user.id)
       .select()
       .single()
 
