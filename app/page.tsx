@@ -1,182 +1,173 @@
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase-server'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { DashboardChart } from '@/components/DashboardChart'
 import { StipendWidget } from '@/components/StipendWidget'
 import { BudgetOverview } from '@/components/BudgetOverview'
-import { AddExpenseButton } from '@/components/AddExpenseButton'
 import { startOfMonth, endOfMonth, format } from 'date-fns'
+import { TrendingUp, TrendingDown, Activity, Wallet } from 'lucide-react'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
 export const dynamic = 'force-dynamic'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
-
+  
+  // Fetch summary data
   const { data: credits } = await supabase.from('balance_entries').select('amount').eq('type', 'credit')
   const { data: debits } = await supabase.from('balance_entries').select('amount').eq('type', 'debit')
   const { data: allExpenses } = await supabase.from('expenses').select('amount, date, category:categories(id, name, icon)')
-
+  
   const totalCredited = credits?.reduce((sum, item) => sum + Number(item.amount), 0) || 0
   const totalDebited = debits?.reduce((sum, item) => sum + Number(item.amount), 0) || 0
   const totalExpenses = allExpenses?.reduce((sum, item) => sum + Number(item.amount), 0) || 0
-
+  
   const totalBalance = totalCredited - totalDebited - totalExpenses
 
+  // Current month stats
   const now = new Date()
   const monthStart = startOfMonth(now)
   const monthEnd = endOfMonth(now)
-
+  
   let totalSpentThisMonth = 0
+  let transactionCount = 0
+  const categoryTotals: Record<string, { name: string, icon: string, total: number }> = {}
+
   allExpenses?.forEach((expense: any) => {
     const expDate = new Date(expense.date)
     if (expDate >= monthStart && expDate <= monthEnd) {
-      totalSpentThisMonth += Number(expense.amount)
+      const amt = Number(expense.amount)
+      totalSpentThisMonth += amt
+      transactionCount += 1
+      
+      const cat = expense.category
+      if (cat) {
+        if (!categoryTotals[cat.id]) {
+          categoryTotals[cat.id] = { name: cat.name, icon: cat.icon, total: 0 }
+        }
+        categoryTotals[cat.id].total += amt
+      }
     }
   })
 
+  const spendingByCategory = Object.values(categoryTotals).sort((a, b) => b.total - a.total)
+
+  // Last 5 expenses
   const { data: recentExpenses } = await supabase
     .from('expenses')
     .select('*, category:categories(*)')
     .order('date', { ascending: false })
     .limit(5)
 
-  const balanceString = totalBalance.toLocaleString('en-IN', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })
-  const [rupees, paise] = balanceString.split('.')
-  const dateString = format(now, 'dd MMM')
-
   return (
-    <div className="flex flex-col">
-      <div className="flex justify-between items-center px-5 pt-5 pb-3">
-        <div>
-          <span className="text-[18px] font-outfit font-700 tracking-[-0.5px] text-[#E8E4DC]">
-            Paisa
-          </span>
-          <span className="text-[18px] font-outfit font-700 tracking-[-0.5px] text-[#E8B84B]">
-            Track
-          </span>
-        </div>
-        <div className="flex items-center gap-2.5">
-          <div className="font-mono text-[9px] text-[#555] bg-[#161616] border border-[#1E1E1E] px-2.5 py-1.5 rounded-md tracking-[1px]">
-            {dateString}
-          </div>
-          <div className="w-8 h-8 rounded-full bg-[#1E1E1E] border border-[#2A2A2A] flex items-center justify-center text-[11px] font-600 text-[#666]">
-            A
-          </div>
-        </div>
+    <div className="p-6 md:p-10 space-y-8 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <p className="text-muted-foreground mt-2">Overview of your finances</p>
       </div>
 
-      <div className="mx-4 mb-1 bg-[#141414] border border-[#1E1E1E] rounded-2xl overflow-hidden">
-        <div className="p-5">
-          <div className="text-[10px] font-500 tracking-[1.5px] text-[#555] uppercase mb-2.5">
-            Current Balance
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="bg-gradient-to-br from-primary/90 to-primary text-primary-foreground border-none shadow-lg lg:col-span-1 md:col-span-2 overflow-hidden relative">
+          <div className="absolute right-0 top-0 opacity-10 transform translate-x-1/4 -translate-y-1/4">
+            <Wallet className="w-32 h-32" />
           </div>
-          <div className="flex items-start gap-1">
-            <span className="font-mono text-[20px] text-[#555] mt-[6px]">₹</span>
-            <span className="font-mono text-[40px] font-600 tracking-[-2px] text-[#E8E4DC] leading-none">
-              {rupees}
-            </span>
-            <span className="font-mono text-[24px] text-[#444] leading-none mt-[4px]">.{paise}</span>
-          </div>
-        </div>
-        <div className="grid grid-cols-3 border-t border-[#1E1E1E]">
-          <div className="py-3 px-4">
-            <div className="text-[9px] uppercase tracking-[1px] text-[#444] font-500 mb-1.5">
-              Credited
-            </div>
-            <div className="font-mono text-[14px] font-500 text-[#5DBE8A]">
-              ₹{totalCredited.toLocaleString('en-IN')}
-            </div>
-          </div>
-          <div className="py-3 px-4 border-x border-[#1E1E1E]">
-            <div className="text-[9px] uppercase tracking-[1px] text-[#444] font-500 mb-1.5">
-              Spent
-            </div>
-            <div className="font-mono text-[14px] font-500 text-[#C96B6B]">
-              ₹{totalExpenses.toLocaleString('en-IN')}
-            </div>
-          </div>
-          <div className="py-3 px-4">
-            <div className="text-[9px] uppercase tracking-[1px] text-[#444] font-500 mb-1.5">
-              This Month
-            </div>
-            <div className="font-mono text-[14px] font-500 text-[#666]">
-              ₹{totalSpentThisMonth.toLocaleString('en-IN')}
-            </div>
-          </div>
-        </div>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium opacity-90">Current Balance</CardTitle>
+            <Wallet className="h-5 w-5 opacity-90" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-4xl font-bold tracking-tight">₹{totalBalance.toLocaleString('en-IN')}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-md hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Credited</CardTitle>
+            <TrendingUp className="h-4 w-4 text-emerald-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">₹{totalCredited.toLocaleString('en-IN')}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-md hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Spent This Month</CardTitle>
+            <TrendingDown className="h-4 w-4 text-rose-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">₹{totalSpentThisMonth.toLocaleString('en-IN')}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-md hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Transactions</CardTitle>
+            <Activity className="h-4 w-4 text-blue-500" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{transactionCount}</div>
+            <p className="text-xs text-muted-foreground mt-1">This month</p>
+          </CardContent>
+        </Card>
       </div>
 
-      <div className="h-px bg-[#181818] mx-4 my-3" />
+      <StipendWidget />
 
-      <div className="px-4 mb-3">
-        <div className="flex justify-between items-center mb-2.5">
-          <div className="text-[10px] font-600 tracking-[1.2px] uppercase text-[#444]">
-            Stipend
-          </div>
-          <Link href="/settings" className="text-[11px] text-[#E8B84B] font-500">
-            Settings
-          </Link>
-        </div>
-        <StipendWidget />
-      </div>
+      <BudgetOverview />
 
-      <div className="px-4 mb-3">
-        <div className="flex justify-between items-center mb-2.5">
-          <div className="text-[10px] font-600 tracking-[1.2px] uppercase text-[#444]">
-            Today's Budgets
-          </div>
-          <div className="font-mono text-[9px] text-[#3A3A3A]">
-            AS OF {format(now, 'HH:mm')}
-          </div>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
+        <div className="col-span-2 lg:col-span-3 space-y-4">
+          <h2 className="text-xl font-semibold tracking-tight">Spending by Category</h2>
+          <DashboardChart data={spendingByCategory} />
         </div>
-        <BudgetOverview />
-      </div>
 
-      <div className="px-4 mb-0">
-        <div className="flex justify-between items-center mb-2.5">
-          <div className="text-[10px] font-600 tracking-[1.2px] uppercase text-[#444]">
-            Recent
-          </div>
-          <Link href="/expenses" className="text-[11px] text-[#E8B84B] font-500">
-            See all →
-          </Link>
+        <div className="col-span-2 lg:col-span-4 space-y-4">
+          <h2 className="text-xl font-semibold tracking-tight">Recent Expenses</h2>
+          <Card className="shadow-md border-muted/50 overflow-hidden">
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader className="bg-muted/30">
+                  <TableRow>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Note</TableHead>
+                    <TableHead className="text-right">Amount</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {recentExpenses && recentExpenses.length > 0 ? (
+                    recentExpenses.map((expense) => (
+                      <TableRow key={expense.id} className="hover:bg-muted/50 transition-colors">
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg bg-background rounded-full p-1 shadow-sm border">{expense.category?.icon}</span>
+                            <span className="font-medium">{expense.category?.name}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-muted-foreground whitespace-nowrap">
+                          {format(new Date(expense.date), 'dd MMM yyyy')}
+                        </TableCell>
+                        <TableCell className="max-w-[150px] truncate">
+                          {expense.note || '-'}
+                        </TableCell>
+                        <TableCell className="text-right font-medium">
+                          ₹{Number(expense.amount).toLocaleString('en-IN')}
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center h-32 text-muted-foreground">
+                        No recent expenses
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
         </div>
-        <div className="bg-[#141414] border border-[#1E1E1E] rounded-2xl overflow-hidden">
-          {recentExpenses && recentExpenses.length > 0 ? (
-            recentExpenses.map((expense, index) => (
-              <div
-                key={expense.id}
-                className={`flex items-center gap-3 px-4 py-3 border-b border-[#181818] last:border-0`}
-              >
-                <div className="w-9 h-9 bg-[#0C0C0C] border border-[#1E1E1E] rounded-xl flex items-center justify-center text-[17px] flex-shrink-0">
-                  {expense.category?.icon}
-                </div>
-                <div className="flex-1">
-                  <div className="text-[13px] font-500 text-[#D4D0C8]">
-                    {expense.category?.name}
-                  </div>
-                  <div className="font-mono text-[10px] text-[#3A3A3A] mt-1 tracking-[0.3px] uppercase">
-                    {format(new Date(expense.date), 'dd MMM')}
-                  </div>
-                </div>
-                <div className="font-mono text-[14px] font-500 text-[#C96B6B] ml-auto">
-                  ₹{Number(expense.amount).toLocaleString('en-IN')}
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="px-4 py-6 text-center text-[11px] uppercase tracking-[0.8px] text-[#444]">
-              No recent expenses
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="px-4 pt-3 pb-3">
-        <AddExpenseButton />
       </div>
     </div>
   )
 }
-

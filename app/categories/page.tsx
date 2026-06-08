@@ -30,17 +30,21 @@ export default async function CategoriesPage() {
   }
 
   return (
-    <div className="px-4 py-4 md:px-6 md:py-6">
-      <h1 className="text-[24px] font-700 tracking-[-0.5px] text-[#E8E4DC] mb-4">
-        Categories
-      </h1>
-
-      <div className="bg-[#141414] border border-[#1E1E1E] rounded-2xl p-4 mb-4">
-        <AddCategoryForm />
+    <div className="p-6 md:p-10 space-y-8 max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Categories</h1>
+        <p className="text-muted-foreground mt-2">Manage your expense categories</p>
       </div>
 
-      <CategoryList initialCategories={categories || []} />
+      <div className="grid gap-8 md:grid-cols-3">
+        <div className="md:col-span-1">
+          <AddCategoryForm />
+        </div>
+        
+        <div className="md:col-span-2 space-y-4">
+          <CategoryList initialCategories={categories || []} />
+        </div>
+      </div>
     </div>
   )
 }
-

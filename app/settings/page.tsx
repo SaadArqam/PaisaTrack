@@ -1,11 +1,17 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { Settings as SettingsIcon, Save } from 'lucide-react'
 
 export default function SettingsPage() {
   const [amount, setAmount] = useState('')
   const [creditDay, setCreditDay] = useState('')
   const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
   const [currentConfig, setCurrentConfig] = useState<{ amount: number, credit_day: number } | null>(null)
 
   useEffect(() => {
@@ -26,8 +32,11 @@ export default function SettingsPage() {
     }
   }
 
-  const handleSave = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
     setLoading(true)
+    setMessage(null)
+
     try {
       const res = await fetch('/api/stipend', {
         method: 'POST',
@@ -37,84 +46,108 @@ export default function SettingsPage() {
           credit_day: Number(creditDay)
         })
       })
-      if (res.ok) {
-        fetchCurrentConfig()
-      }
+
+      if (!res.ok) throw new Error('Failed to save config')
+
+      setMessage({ type: 'success', text: 'Stipend configuration saved successfully!' })
+      fetchCurrentConfig()
     } catch (error) {
-      console.error(error)
+      setMessage({ type: 'error', text: 'Failed to save configuration. Please try again.' })
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="px-4 py-4 md:px-6 md:py-6">
-      <h1 className="text-[24px] font-700 tracking-[-0.5px] text-[#E8E4DC] mb-4">
-        Settings
-      </h1>
-
-      <div className="bg-[#141414] border border-[#1E1E1E] rounded-2xl p-5 mb-3">
-        <div className="text-[10px] uppercase tracking-[1.2px] text-[#444] font-600 mb-4">
-          Stipend Configuration
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <div className="text-[10px] uppercase tracking-[1px] text-[#3A3A3A] font-500 mb-1.5">
-              Monthly Stipend
-            </div>
-            <input
-              type="number"
-              placeholder="25000"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              className="w-full h-12 bg-[#101010] border border-[#1E1E1E] rounded-xl px-4 font-mono text-[16px] text-[#E8E4DC] focus:border-[#E8B84B] focus:outline-none transition-colors"
-            />
-          </div>
-          <div>
-            <div className="text-[10px] uppercase tracking-[1px] text-[#3A3A3A] font-500 mb-1.5">
-              Credit Day
-            </div>
-            <input
-              type="number"
-              placeholder="1"
-              value={creditDay}
-              onChange={(e) => setCreditDay(e.target.value)}
-              className="w-full h-12 bg-[#101010] border border-[#1E1E1E] rounded-xl px-4 font-mono text-[16px] text-[#E8E4DC] focus:border-[#E8B84B] focus:outline-none transition-colors"
-            />
-          </div>
-        </div>
-        <button
-          onClick={handleSave}
-          disabled={loading}
-          className="mt-4 w-full h-[52px] bg-[#E8B84B] rounded-[13px] font-outfit text-[14px] font-600 text-[#0C0C0C] active:scale-[0.98] transition-all duration-150 disabled:opacity-50"
-        >
-          {loading ? 'Saving...' : 'Save Configuration'}
-        </button>
+    <div className="p-6 md:p-10 space-y-8 max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight flex items-center gap-3">
+          <SettingsIcon className="h-8 w-8" />
+          Settings
+        </h1>
+        <p className="text-muted-foreground mt-2">Configure your stipend settings</p>
       </div>
 
-      {currentConfig && (
-        <div className="bg-[#141414] border border-[#1E1E1E] rounded-2xl p-5">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <div className="text-[9px] uppercase tracking-[1px] text-[#3A3A3A] mb-1">
-                Monthly Stipend
+      <div className="max-w-2xl">
+        <Card className="shadow-md">
+          <CardHeader>
+            <CardTitle>Stipend Configuration</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="amount">Monthly Stipend Amount (₹)</Label>
+                <Input
+                  id="amount"
+                  type="number"
+                  placeholder="e.g., 25000"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  required
+                  min="0"
+                  step="0.01"
+                  className="text-lg"
+                />
               </div>
-              <div className="font-mono text-[20px] font-600 text-[#E8E4DC]">
-                ₹{Number(currentConfig.amount).toLocaleString('en-IN')}
+
+              <div className="space-y-2">
+                <Label htmlFor="creditDay">Stipend Credit Day (1-31)</Label>
+                <Input
+                  id="creditDay"
+                  type="number"
+                  placeholder="e.g., 1 for 1st of the month"
+                  value={creditDay}
+                  onChange={(e) => setCreditDay(e.target.value)}
+                  required
+                  min="1"
+                  max="31"
+                  className="text-lg"
+                />
+                <p className="text-sm text-muted-foreground">
+                  The day of the month when your stipend arrives
+                </p>
               </div>
-            </div>
-            <div>
-              <div className="text-[9px] uppercase tracking-[1px] text-[#3A3A3A] mb-1">
-                Credit Day
+
+              {message && (
+                <div className={`p-3 rounded-lg ${
+                  message.type === 'success' 
+                    ? 'bg-green-500/10 text-green-500 border border-green-500/20' 
+                    : 'bg-red-500/10 text-red-500 border border-red-500/20'
+                }`}>
+                  {message.text}
+                </div>
+              )}
+
+              <Button type="submit" disabled={loading} className="w-full">
+                <Save className="h-4 w-4 mr-2" />
+                {loading ? 'Saving...' : 'Save Configuration'}
+              </Button>
+            </form>
+
+            {currentConfig && (
+              <div className="mt-6 pt-6 border-t">
+                <h3 className="font-semibold mb-3">Current Configuration</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Monthly Stipend:</span>
+                    <span className="font-medium">₹{Number(currentConfig.amount).toLocaleString('en-IN')}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Credit Day:</span>
+                    <span className="font-medium">{currentConfig.credit_day}{getOrdinalSuffix(currentConfig.credit_day)} of the month</span>
+                  </div>
+                </div>
               </div>
-              <div className="font-mono text-[20px] font-600 text-[#E8E4DC]">
-                {currentConfig.credit_day}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }
 
+function getOrdinalSuffix(n: number) {
+  const s = ['th', 'st', 'nd', 'rd']
+  const v = n % 100
+  return s[(v - 20) % 10] || s[v] || s[0]
+}
