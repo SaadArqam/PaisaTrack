@@ -65,7 +65,7 @@ export default async function DashboardPage() {
         <p className="text-sm text-muted-foreground">Overview of your finances</p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Card className="shadow-lg lg:col-span-1 md:col-span-2 overflow-hidden relative flex flex-col justify-between h-full min-h-[100px]">
           <div className="absolute right-0 top-0 opacity-10 transform translate-x-1/4 -translate-y-1/4">
             <Wallet className="w-32 h-32" />

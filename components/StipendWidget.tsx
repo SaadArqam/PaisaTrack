@@ -88,7 +88,7 @@ export function StipendWidget() {
   return (
     <div className="space-y-4">
       {/* Row 1: Days Until Stipend & Cycle Progress */}
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-2 gap-3">
         <Card className="shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
@@ -124,7 +124,7 @@ export function StipendWidget() {
       </div>
 
       {/* Row 2: Safe to Spend/day & You're Spending/day */}
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid grid-cols-2 gap-3">
         <Card className="shadow-md">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Safe to Spend/day</CardTitle>
