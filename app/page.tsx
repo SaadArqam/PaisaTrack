@@ -66,13 +66,13 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="bg-gradient-to-br from-primary/90 to-primary text-primary-foreground border-none shadow-lg lg:col-span-1 md:col-span-2 overflow-hidden relative">
+        <Card className="shadow-lg lg:col-span-1 md:col-span-2 overflow-hidden relative">
           <div className="absolute right-0 top-0 opacity-10 transform translate-x-1/4 -translate-y-1/4">
             <Wallet className="w-32 h-32" />
           </div>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium opacity-90">Current Balance</CardTitle>
-            <Wallet className="h-5 w-5 opacity-90" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">Current Balance</CardTitle>
+            <Wallet className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-4xl font-bold tracking-tight">₹{totalBalance.toLocaleString('en-IN')}</div>
