@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Sidebar } from "@/components/Sidebar";
@@ -15,9 +15,25 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  themeColor: "#0C0C0C",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 export const metadata: Metadata = {
   title: "PaisaTrack - Personal Expense Manager",
   description: "Track your expenses and manage your balance efficiently.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "PaisaTrack",
+  },
+  icons: {
+    apple: "/apple-icon.png",
+  },
 };
 
 export default function RootLayout({
