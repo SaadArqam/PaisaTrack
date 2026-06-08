@@ -1,10 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
-import { format } from 'date-fns'
 
 interface BudgetStat {
   categoryId: string
@@ -20,13 +17,9 @@ interface BudgetStat {
 export function BudgetOverview() {
   const [stats, setStats] = useState<BudgetStat[]>([])
   const [loading, setLoading] = useState(true)
-  const [currentTime, setCurrentTime] = useState(new Date())
 
   useEffect(() => {
     fetchStats()
-    // Update time every minute
-    const interval = setInterval(() => setCurrentTime(new Date()), 60000)
-    return () => clearInterval(interval)
   }, [])
 
   const fetchStats = async () => {
@@ -41,125 +34,81 @@ export function BudgetOverview() {
     }
   }
 
-  const formatCurrency = (amount: number) => {
-    return `₹${amount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`
-  }
-
-  const getStatusColor = (status: 'safe' | 'warning' | 'danger') => {
+  const getBarColor = (status: 'safe' | 'warning' | 'danger') => {
     switch (status) {
-      case 'safe': return '#22c55e'
-      case 'warning': return '#eab308'
-      case 'danger': return '#ef4444'
+      case 'safe': return '#5DBE8A'
+      case 'warning': return '#E8B84B'
+      case 'danger': return '#C96B6B'
     }
   }
 
-  const safeCount = stats.filter(s => s.status === 'safe').length
-
   if (loading) {
     return (
-      <Card className="shadow-md">
-        <CardContent className="p-6">
-          <div className="animate-pulse space-y-4">
-            <div className="h-4 bg-muted rounded w-1/3"></div>
-            <div className="h-8 bg-muted rounded w-full"></div>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="bg-[#141414] border border-[#1E1E1E] rounded-2xl overflow-hidden p-4">
+        <div className="animate-pulse space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="flex items-center gap-3">
+              <div className="w-9 h-9 bg-[#1E1E1E] rounded-xl" />
+              <div className="flex-1">
+                <div className="h-4 bg-[#1E1E1E] rounded w-1/3 mb-1.5" />
+                <div className="h-[3px] bg-[#1E1E1E] rounded-sm w-32" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     )
   }
 
   if (stats.length === 0) {
     return (
-      <Card className="shadow-md">
-        <CardHeader>
-          <CardTitle>Today's Budget</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-3">
-            <p className="text-sm text-muted-foreground">No budgets set — go to Categories to set daily limits</p>
-            <Link href="/categories">
-              <button className="text-sm bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg transition-colors">
-                Set Budgets
-              </button>
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="bg-[#141414] border border-[#1E1E1E] rounded-2xl p-4">
+        <p className="text-[11px] uppercase tracking-[0.8px] text-[#444]">
+          No budgets set — go to <Link href="/categories" className="text-[#E8B84B]">Categories</Link>
+        </p>
+      </div>
     )
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-        <div>
-          <h2 className="text-xl font-semibold tracking-tight">Today's Budget</h2>
-          <p className="text-xs text-muted-foreground">As of {format(currentTime, 'h:mm a')}</p>
+    <div className="bg-[#141414] border border-[#1E1E1E] rounded-2xl overflow-hidden">
+      {stats.map((stat, index) => (
+        <div
+          key={stat.categoryId}
+          className={`px-4 py-3 border-b border-[#181818] ${index === stats.length - 1 ? 'border-b-0' : ''}`}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 bg-[#0C0C0C] border border-[#1E1E1E] rounded-xl flex items-center justify-center text-[17px] flex-shrink-0">
+                {stat.categoryIcon}
+              </div>
+              <div>
+                <div className="text-[13px] font-500 text-[#D4D0C8]">
+                  {stat.categoryName}
+                </div>
+                <div className="mt-1.5 h-[3px] w-32 bg-[#1E1E1E] rounded-sm overflow-hidden">
+                  <div
+                    className="h-[3px] rounded-sm transition-all duration-500"
+                    style={{
+                      width: `${Math.min(stat.percentageUsed, 100)}%`,
+                      backgroundColor: getBarColor(stat.status),
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="text-right flex-shrink-0">
+              <div className="font-mono text-[13px] font-500 text-[#D4D0C8]">
+                ₹{stat.spentToday.toLocaleString('en-IN')}
+              </div>
+              <div className="font-mono text-[10px] text-[#3A3A3A]">
+                / ₹{stat.dailyBudget.toLocaleString('en-IN')}
+              </div>
+            </div>
+          </div>
         </div>
-        <p className="text-sm text-muted-foreground">
-          {safeCount} of {stats.length} categories within budget today
-        </p>
-      </div>
-
-      <div className="grid gap-4">
-        {stats.map((stat) => (
-          <Card 
-            key={stat.categoryId} 
-            className="shadow-md"
-            style={{ borderLeft: `4px solid ${getStatusColor(stat.status)}` }}
-          >
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl bg-muted/50 p-2 rounded-full">{stat.categoryIcon}</span>
-                  <div>
-                    <h3 className="font-medium">{stat.categoryName}</h3>
-                    <p className="text-xs text-muted-foreground">
-                      {formatCurrency(stat.spentToday)} spent of {formatCurrency(stat.dailyBudget)} today
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  {stat.status === 'danger' && (
-                    <Badge variant="destructive" className="bg-red-500 hover:bg-red-600">
-                      Over Budget!
-                    </Badge>
-                  )}
-                  {stat.status === 'warning' && (
-                    <Badge className="bg-yellow-500 hover:bg-yellow-600 text-yellow-950">
-                      Almost there
-                    </Badge>
-                  )}
-                  <span className="text-sm font-medium">{Math.round(stat.percentageUsed)}%</span>
-                </div>
-              </div>
-
-              <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
-                <div
-                  className="h-2 rounded-full transition-all duration-600"
-                  style={{
-                    width: `${Math.min(stat.percentageUsed, 100)}%`,
-                    backgroundColor: getStatusColor(stat.status)
-                  }}
-                />
-              </div>
-
-              <div className="mt-2 text-xs">
-                {stat.remainingBudget < 0 ? (
-                  <p className="text-red-500 font-medium">
-                    {formatCurrency(Math.abs(stat.remainingBudget))} over today's limit
-                  </p>
-                ) : (
-                  <p className="text-green-500 font-medium">
-                    {formatCurrency(stat.remainingBudget)} left today
-                  </p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <p className="text-xs text-muted-foreground text-center">Resets at midnight</p>
+      ))}
     </div>
   )
 }
+
