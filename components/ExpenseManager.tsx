@@ -38,6 +38,7 @@ export function ExpenseManager({ categories, initialExpenses }: { categories: Ca
 
   const [filterCategory, setFilterCategory] = useState('all')
   const [filterMonth, setFilterMonth] = useState(new Date().toISOString().slice(0, 7))
+  const [searchQuery, setSearchQuery] = useState('')
 
   async function onAddSubmit() {
     setErrorMsg('')
@@ -138,7 +139,13 @@ export function ExpenseManager({ categories, initialExpenses }: { categories: Ca
     const expDate = expense.date.slice(0, 7)
     const matchMonth = filterMonth ? expDate === filterMonth : true
     const matchCategory = filterCategory === 'all' ? true : expense.category_id === filterCategory
-    return matchMonth && matchCategory
+    
+    const searchLower = searchQuery.toLowerCase()
+    const matchSearch = !searchLower || 
+      (expense.note && expense.note.toLowerCase().includes(searchLower)) ||
+      (expense.category?.name && expense.category.name.toLowerCase().includes(searchLower))
+
+    return matchMonth && matchCategory && matchSearch
   }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
   const totalFiltered = filteredExpenses.reduce((sum, exp) => sum + Number(exp.amount), 0)
@@ -294,7 +301,14 @@ export function ExpenseManager({ categories, initialExpenses }: { categories: Ca
           <CardHeader className="pb-4">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <CardTitle>Expense History</CardTitle>
-              <div className="flex items-center gap-2 w-full sm:w-auto">
+              <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+                <Input
+                  type="text"
+                  placeholder="Search expenses..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full sm:w-[160px]"
+                />
                 <Input
                   type="month"
                   value={filterMonth}
