@@ -99,22 +99,34 @@ export function CategoryList({ initialCategories }: { initialCategories: Categor
     <>
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
         {initialCategories.map((category) => (
-          <Card key={category.id} className="relative group overflow-hidden shadow-sm hover:shadow-md transition-all">
+          <Card
+            key={category.id}
+            className="relative group overflow-hidden shadow-sm hover:shadow-md transition-all"
+            style={{ backgroundColor: '#161616', border: '1px solid #252525' }}
+          >
             <CardContent className="p-6 flex flex-col items-center justify-center gap-3">
-              <div className="text-4xl bg-muted/50 p-3 rounded-full">{category.icon}</div>
-              <span className="font-medium text-center truncate w-full" title={category.name}>{category.name}</span>
-              
+              <div style={{ backgroundColor: '#1E1E1E', borderRadius: '12px', padding: '10px', display: 'inline-block', marginBottom: '8px' }}>
+                <span className="text-4xl">{category.icon}</span>
+              </div>
+              <span
+                className="text-center truncate w-full"
+                style={{ fontSize: '15px', fontWeight: 600 }}
+                title={category.name}
+              >
+                {category.name}
+              </span>
+
               {category.daily_budget ? (
-                <div className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-full">
+                <div className="text-xs px-2 py-1 rounded-full" style={{ color: '#E8B84B', backgroundColor: 'rgba(232,184,75,0.08)' }}>
                   Daily: ₹{Number(category.daily_budget).toLocaleString('en-IN')}
                 </div>
               ) : (
-                <div className="text-xs text-muted-foreground">No budget set</div>
+                <div className="text-xs" style={{ color: '#3A3A3A' }}>No budget set</div>
               )}
-              
+
               <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   className="h-7 text-xs"
                   onClick={() => openBudgetDialog(category)}
@@ -122,9 +134,9 @@ export function CategoryList({ initialCategories }: { initialCategories: Categor
                   <Wallet className="h-3 w-3 mr-1" />
                   Set Budget
                 </Button>
-                <Button 
-                  variant="destructive" 
-                  size="icon" 
+                <Button
+                  variant="destructive"
+                  size="icon"
                   className="h-7 w-7"
                   onClick={() => setDeleteId(category.id)}
                 >

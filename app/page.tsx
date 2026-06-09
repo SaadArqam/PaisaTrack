@@ -76,7 +76,7 @@ export default async function DashboardPage() {
       <MigrationBanner />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <Card className="shadow-lg lg:col-span-1 md:col-span-2 overflow-hidden relative flex flex-col justify-between h-full min-h-[100px]">
+        <Card className="shadow-lg lg:col-span-1 md:col-span-2 overflow-hidden relative flex flex-col justify-between h-full min-h-[100px]" style={{ borderTop: '2px solid #E8B84B' }}>
           <div className="absolute right-0 top-0 opacity-10 transform translate-x-1/4 -translate-y-1/4">
             <Wallet className="w-32 h-32" />
           </div>
@@ -85,11 +85,11 @@ export default async function DashboardPage() {
             <Wallet className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="font-mono text-4xl font-semibold tracking-tight">₹{totalBalance.toLocaleString('en-IN')}</div>
+            <div className="font-mono text-5xl md:text-6xl font-semibold tracking-tight">₹{totalBalance.toLocaleString('en-IN')}</div>
           </CardContent>
         </Card>
 
-        <Card className="shadow-md hover:shadow-lg transition-shadow flex flex-col justify-between h-full min-h-[100px]">
+        <Card className="shadow-md hover:shadow-lg transition-shadow flex flex-col justify-between h-full min-h-[100px]" style={{ borderTop: '2px solid #5DBE8A' }}>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Total Credited</CardTitle>
             <TrendingUp className="h-4 w-4 text-emerald-500" />
@@ -99,7 +99,7 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-md hover:shadow-lg transition-shadow flex flex-col justify-between h-full min-h-[100px]">
+        <Card className="shadow-md hover:shadow-lg transition-shadow flex flex-col justify-between h-full min-h-[100px]" style={{ borderTop: '2px solid #C96B6B' }}>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Spent This Month</CardTitle>
             <TrendingDown className="h-4 w-4 text-rose-500" />
@@ -109,7 +109,7 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="shadow-md hover:shadow-lg transition-shadow flex flex-col justify-between h-full min-h-[100px]">
+        <Card className="shadow-md hover:shadow-lg transition-shadow flex flex-col justify-between h-full min-h-[100px]" style={{ borderTop: '2px solid #6B9FE8' }}>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">Transactions</CardTitle>
             <Activity className="h-4 w-4 text-blue-500" />
@@ -129,12 +129,22 @@ export default async function DashboardPage() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
         <div className="col-span-2 lg:col-span-3 space-y-4">
-          <h2 className="text-xl font-semibold tracking-tight">Spending by Category</h2>
+          <h2 className="text-xl font-semibold tracking-tight">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ width: '3px', height: '16px', backgroundColor: '#E8B84B', borderRadius: '2px' }} />
+              <span>Spending by Category</span>
+            </div>
+          </h2>
           <DashboardChart data={spendingByCategory} />
         </div>
 
         <div className="col-span-2 lg:col-span-4 space-y-4">
-          <h2 className="text-xl font-semibold tracking-tight">Recent Expenses</h2>
+          <h2 className="text-xl font-semibold tracking-tight">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ width: '3px', height: '16px', backgroundColor: '#E8B84B', borderRadius: '2px' }} />
+              <span>Recent Expenses</span>
+            </div>
+          </h2>
           <Card className="shadow-md border-muted/50 overflow-hidden">
             <CardContent className="p-0">
               <Table>
@@ -152,6 +162,19 @@ export default async function DashboardPage() {
                       <TableRow key={expense.id} className="hover:bg-muted/50 transition-colors">
                         <TableCell>
                           <div className="flex items-center gap-2">
+                            <span
+                              style={{
+                                display: 'inline-block',
+                                width: '8px',
+                                height: '8px',
+                                borderRadius: '50%',
+                                backgroundColor:
+                                  expense.category?.name === 'Travel' ? '#6B9FE8'
+                                  : expense.category?.name === 'Food' ? '#5DBE8A'
+                                  : '#E8B84B',
+                                flexShrink: 0,
+                              }}
+                            />
                             <span className="text-lg bg-background rounded-full p-1 shadow-sm border">{expense.category?.icon}</span>
                             <span className="font-medium">{expense.category?.name}</span>
                           </div>

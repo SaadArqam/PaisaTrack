@@ -96,9 +96,25 @@ function RecurringClient({ initialData }: { initialData: RecurringExpense[] }) {
     return (
       <Card className="bg-card border border-border rounded-2xl mx-4">
         <CardContent className="p-8 text-center">
-          <p className="text-muted-foreground mb-3">No recurring payments set up yet</p>
-          <Link href="/expenses" className="text-[#E8B84B] text-sm font-medium hover:underline">
-            Add from Expenses →
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>🔄</div>
+          <p className="text-lg font-semibold mb-2">No recurring payments</p>
+          <p className="text-sm text-muted-foreground mb-5">Add recurring expenses like rent, tiffin, subscriptions</p>
+          <Link href="/expenses">
+            <button
+              style={{
+                backgroundColor: '#E8B84B',
+                color: '#0C0C0C',
+                border: 'none',
+                borderRadius: '13px',
+                height: '48px',
+                padding: '0 24px',
+                fontSize: '14px',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              Add from Expenses →
+            </button>
           </Link>
         </CardContent>
       </Card>

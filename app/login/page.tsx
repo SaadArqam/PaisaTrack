@@ -40,8 +40,19 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-[#0C0C0C] flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
+        {/* Amber ambient gradient behind logo */}
+        <div style={{
+          position: 'absolute',
+          top: 0,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '100%',
+          height: '300px',
+          background: 'radial-gradient(ellipse at top, rgba(232,184,75,0.08) 0%, transparent 60%)',
+          pointerEvents: 'none',
+        }} />
         {/* Logo */}
-        <div className="text-center mb-10">
+        <div className="text-center mb-10" style={{ position: 'relative' }}>
           <h1 className="text-3xl font-bold tracking-tight text-white">
             Paisa<span style={{ color: '#E8B84B' }}>Track</span>
           </h1>
@@ -49,7 +60,7 @@ export default function LoginPage() {
         </div>
 
         {/* Card */}
-        <div className="bg-[#141414] border border-[#1E1E1E] rounded-2xl p-7">
+        <div className="bg-[#141414] border border-[#1E1E1E] rounded-2xl p-7" style={{ borderTop: '2px solid #E8B84B' }}>
           <h2 className="text-lg font-semibold text-white mb-6">Welcome back</h2>
 
           {error && (

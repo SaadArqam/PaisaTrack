@@ -63,40 +63,89 @@ export function AddBalanceForm() {
         <form onSubmit={onSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="amount">Amount (₹)</Label>
-            <Input 
-              id="amount" 
-              type="number" 
-              step="0.01" 
+            <input
+              id="amount"
+              type="number"
+              step="0.01"
               min="1"
-              required 
+              required
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="0.00"
+              style={{
+                backgroundColor: '#111111',
+                border: '1px solid #222222',
+                borderRadius: '10px',
+                color: '#E8E4DC',
+                padding: '0 16px',
+                height: '48px',
+                width: '100%',
+                outline: 'none',
+                fontSize: '14px',
+              }}
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="date">Date</Label>
-            <Input
+            <input
               id="date"
               type="date"
               required
               value={date}
               onChange={(e) => setDate(e.target.value)}
+              style={{
+                backgroundColor: '#111111',
+                border: '1px solid #222222',
+                borderRadius: '10px',
+                color: '#E8E4DC',
+                padding: '0 16px',
+                height: '48px',
+                width: '100%',
+                outline: 'none',
+                fontSize: '14px',
+              }}
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="note">Note (Optional)</Label>
-            <Input 
-              id="note" 
-              type="text" 
+            <input
+              id="note"
+              type="text"
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="e.g., Salary, Gift"
+              style={{
+                backgroundColor: '#111111',
+                border: '1px solid #222222',
+                borderRadius: '10px',
+                color: '#E8E4DC',
+                padding: '0 16px',
+                height: '48px',
+                width: '100%',
+                outline: 'none',
+                fontSize: '14px',
+              }}
             />
           </div>
-          <Button type="submit" className="w-full" disabled={loading}>
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              backgroundColor: '#E8B84B',
+              color: '#0C0C0C',
+              border: 'none',
+              borderRadius: '13px',
+              height: '52px',
+              width: '100%',
+              fontSize: '14px',
+              fontWeight: 600,
+              cursor: loading ? 'not-allowed' : 'pointer',
+              opacity: loading ? 0.6 : 1,
+              fontFamily: 'var(--font-outfit)',
+            }}
+          >
             {loading ? 'Adding...' : 'Add Money'}
-          </Button>
+          </button>
         </form>
       </CardContent>
     </Card>

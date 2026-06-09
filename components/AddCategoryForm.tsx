@@ -66,30 +66,68 @@ export function AddCategoryForm() {
         <form onSubmit={onSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
-            <Input 
-              id="name" 
-              type="text" 
-              required 
+            <input
+              id="name"
+              type="text"
+              required
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., Groceries"
+              style={{
+                backgroundColor: '#111111',
+                border: '1px solid #222222',
+                borderRadius: '10px',
+                color: '#E8E4DC',
+                padding: '0 16px',
+                height: '48px',
+                width: '100%',
+                outline: 'none',
+                fontSize: '14px',
+              }}
             />
           </div>
           <div className="space-y-2">
             <Label htmlFor="icon">Emoji Icon</Label>
-            <Input 
-              id="icon" 
-              type="text" 
-              required 
+            <input
+              id="icon"
+              type="text"
+              required
               value={icon}
               onChange={(e) => setIcon(e.target.value)}
               placeholder="🍔"
               maxLength={2}
+              style={{
+                backgroundColor: '#111111',
+                border: '1px solid #222222',
+                borderRadius: '10px',
+                color: '#E8E4DC',
+                padding: '0 16px',
+                height: '48px',
+                width: '100%',
+                outline: 'none',
+                fontSize: '14px',
+              }}
             />
           </div>
-          <Button type="submit" className="w-full" disabled={loading}>
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              backgroundColor: '#E8B84B',
+              color: '#0C0C0C',
+              border: 'none',
+              borderRadius: '13px',
+              height: '52px',
+              width: '100%',
+              fontSize: '14px',
+              fontWeight: 600,
+              cursor: loading ? 'not-allowed' : 'pointer',
+              opacity: loading ? 0.6 : 1,
+              fontFamily: 'var(--font-outfit)',
+            }}
+          >
             {loading ? 'Creating...' : 'Create Category'}
-          </Button>
+          </button>
         </form>
       </CardContent>
     </Card>

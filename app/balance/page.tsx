@@ -19,6 +19,7 @@ export default async function BalancePage() {
     <div className="p-4 md:p-8 space-y-8 max-w-7xl mx-auto w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="pt-2 pb-2">
         <h1 className="text-2xl font-bold tracking-tight">Balance</h1>
+        <div style={{ width: '40px', height: '3px', backgroundColor: '#E8B84B', borderRadius: '2px', marginTop: '6px' }} />
         <p className="text-muted-foreground mt-2">Manage your wallet balance and view history</p>
       </div>
 
@@ -46,7 +47,11 @@ export default async function BalancePage() {
                   <TableBody>
                     {history && history.length > 0 ? (
                       history.map((entry) => (
-                        <TableRow key={entry.id} className="hover:bg-muted/50 transition-colors">
+                        <TableRow
+                          key={entry.id}
+                          className="hover:bg-muted/50 transition-colors"
+                          style={entry.type === 'credit' ? { borderLeft: '3px solid #5DBE8A' } : undefined}
+                        >
                           <TableCell className="text-muted-foreground whitespace-nowrap">
                             {format(new Date(entry.created_at), 'dd MMM yyyy, h:mm a')}
                           </TableCell>
@@ -58,7 +63,9 @@ export default async function BalancePage() {
                             )}
                           </TableCell>
                           <TableCell className="max-w-[150px] truncate">{entry.note || '-'}</TableCell>
-                          <TableCell className={`text-right font-semibold ${entry.type === 'credit' ? 'text-emerald-500' : 'text-rose-500'}`}>
+                          <TableCell
+                            className={`text-right ${entry.type === 'credit' ? 'text-base font-semibold text-emerald-500' : 'font-semibold text-rose-500'}`}
+                          >
                             {entry.type === 'credit' ? '+' : '-'}₹{Number(entry.amount).toLocaleString('en-IN')}
                           </TableCell>
                         </TableRow>

@@ -186,7 +186,7 @@ export function ExpenseManager({ categories, initialExpenses }: { categories: Ca
               </div>
               <div className="space-y-2">
                 <Label htmlFor="amount">Amount (₹)</Label>
-                <Input
+                <input
                   id="amount"
                   type="number"
                   step="0.01"
@@ -194,25 +194,58 @@ export function ExpenseManager({ categories, initialExpenses }: { categories: Ca
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder="0.00"
+                  style={{
+                    backgroundColor: '#111111',
+                    border: '1px solid #222222',
+                    borderRadius: '10px',
+                    color: '#E8E4DC',
+                    padding: '0 16px',
+                    height: '48px',
+                    width: '100%',
+                    outline: 'none',
+                    fontSize: '14px',
+                  }}
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="date">Date</Label>
-                <Input
+                <input
                   id="date"
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
+                  style={{
+                    backgroundColor: '#111111',
+                    border: '1px solid #222222',
+                    borderRadius: '10px',
+                    color: '#E8E4DC',
+                    padding: '0 16px',
+                    height: '48px',
+                    width: '100%',
+                    outline: 'none',
+                    fontSize: '14px',
+                  }}
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="note">Note (Optional)</Label>
-                <Input
+                <input
                   id="note"
                   type="text"
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   placeholder="e.g., Dinner, Taxi"
+                  style={{
+                    backgroundColor: '#111111',
+                    border: '1px solid #222222',
+                    borderRadius: '10px',
+                    color: '#E8E4DC',
+                    padding: '0 16px',
+                    height: '48px',
+                    width: '100%',
+                    outline: 'none',
+                    fontSize: '14px',
+                  }}
                 />
               </div>
 
@@ -222,7 +255,8 @@ export function ExpenseManager({ categories, initialExpenses }: { categories: Ca
                     type="checkbox"
                     checked={isRecurring}
                     onChange={(e) => setIsRecurring(e.target.checked)}
-                    className="w-4 h-4 accent-[#E8B84B]"
+                    className="w-4 h-4"
+                    style={{ accentColor: '#E8B84B' }}
                   />
                   <span className="text-sm font-medium">Recurring payment</span>
                 </label>
@@ -234,21 +268,43 @@ export function ExpenseManager({ categories, initialExpenses }: { categories: Ca
                   <div className="space-y-4 pt-2 border-t border-border">
                     <div className="space-y-2">
                       <Label htmlFor="recurringName">Payment name</Label>
-                      <Input
+                      <input
                         id="recurringName"
                         type="text"
                         value={recurringName}
                         onChange={(e) => setRecurringName(e.target.value)}
                         placeholder="e.g., Tiffin Service"
+                        style={{
+                          backgroundColor: '#111111',
+                          border: '1px solid #222222',
+                          borderRadius: '10px',
+                          color: '#E8E4DC',
+                          padding: '0 16px',
+                          height: '48px',
+                          width: '100%',
+                          outline: 'none',
+                          fontSize: '14px',
+                        }}
                       />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="recurringNextDue">Next due date</Label>
-                      <Input
+                      <input
                         id="recurringNextDue"
                         type="date"
                         value={recurringNextDue}
                         onChange={(e) => setRecurringNextDue(e.target.value)}
+                        style={{
+                          backgroundColor: '#111111',
+                          border: '1px solid #222222',
+                          borderRadius: '10px',
+                          color: '#E8E4DC',
+                          padding: '0 16px',
+                          height: '48px',
+                          width: '100%',
+                          outline: 'none',
+                          fontSize: '14px',
+                        }}
                       />
                     </div>
                     <div className="space-y-2">
@@ -284,13 +340,26 @@ export function ExpenseManager({ categories, initialExpenses }: { categories: Ca
                 </div>
               </div>
 
-              <Button
+              <button
                 onClick={onAddSubmit}
                 className="w-full min-h-[44px]"
                 disabled={loading || !amount || !categoryId || !date}
+                style={{
+                  backgroundColor: '#E8B84B',
+                  color: '#0C0C0C',
+                  border: 'none',
+                  borderRadius: '13px',
+                  height: '52px',
+                  width: '100%',
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  cursor: loading || !amount || !categoryId || !date ? 'not-allowed' : 'pointer',
+                  opacity: loading || !amount || !categoryId || !date ? 0.5 : 1,
+                  fontFamily: 'var(--font-outfit)',
+                }}
               >
                 {loading ? 'Adding...' : 'Add Expense'}
-              </Button>
+              </button>
             </div>
           </CardContent>
         </Card>
@@ -352,12 +421,14 @@ export function ExpenseManager({ categories, initialExpenses }: { categories: Ca
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
-                            <span className="text-lg bg-background rounded-full p-1 shadow-sm border">{expense.category?.icon}</span>
+                            <span style={{ backgroundColor: '#1A1A1A', borderRadius: '8px', padding: '6px', fontSize: '16px', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                              {expense.category?.icon}
+                            </span>
                             <span className="font-medium">{expense.category?.name}</span>
                           </div>
                         </TableCell>
                         <TableCell className="max-w-[150px] truncate">{expense.note || '-'}</TableCell>
-                        <TableCell className="text-right font-medium font-mono">
+                        <TableCell className="text-right" style={{ color: '#C96B6B', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
                           ₹{Number(expense.amount).toLocaleString('en-IN')}
                         </TableCell>
                         <TableCell>

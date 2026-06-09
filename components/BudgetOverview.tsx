@@ -92,7 +92,12 @@ export function BudgetOverview() {
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
-          <h2 className="text-xl font-semibold tracking-tight">Today's Budget</h2>
+          <h2 className="text-xl font-semibold tracking-tight">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ width: '3px', height: '16px', backgroundColor: '#E8B84B', borderRadius: '2px' }} />
+              <span>Today's Budget</span>
+            </div>
+          </h2>
           <p className="text-xs text-muted-foreground">As of {format(currentTime, 'h:mm a')}</p>
         </div>
         <p className="text-sm text-muted-foreground">
