@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { Home, Wallet, Tag, Receipt, RefreshCw, Settings } from 'lucide-react'
+import { Home, Wallet, Tag, Receipt, RefreshCw, Settings, BarChart2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase'
 
@@ -13,6 +13,7 @@ const mainNavItems = [
   { name: 'Categories', href: '/categories', icon: Tag },
   { name: 'Expenses', href: '/expenses', icon: Receipt },
   { name: 'Recurring', href: '/recurring', icon: RefreshCw },
+  { name: 'Reports', href: '/reports', icon: BarChart2 },
 ]
 
 const settingsItem = { name: 'Settings', href: '/settings', icon: Settings }
