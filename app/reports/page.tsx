@@ -22,6 +22,7 @@ export default function ReportsPage() {
   const [monthlyData, setMonthlyData] = useState<MonthlyData | null>(null)
   const [days, setDays] = useState(90)
   const [loading, setLoading] = useState(true)
+  const [tooltip, setTooltip] = useState<{ text: string; x: number; y: number } | null>(null)
 
   useEffect(() => {
     setLoading(true)
@@ -79,14 +80,40 @@ export default function ReportsPage() {
         cells.push(
           <div
             key={d}
-            title={amount ? `${date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} · ₹${amount.toLocaleString('en-IN')}` : date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+            className="hm-cell"
+            onMouseEnter={(e) => {
+              if (isFuture) return
+              const rect = (e.target as HTMLElement).getBoundingClientRect()
+              const containerRect = (e.target as HTMLElement).closest('.heatmap-container')?.getBoundingClientRect()
+              const text = amount
+                ? `${date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} · ₹${amount.toLocaleString('en-IN')}`
+                : `${date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} · No expenses`
+              setTooltip({
+                text,
+                x: rect.left - (containerRect?.left || 0),
+                y: rect.top - (containerRect?.top || 0) - 36
+              })
+            }}
+            onMouseLeave={() => setTooltip(null)}
+            onClick={(e) => {
+              if (isFuture) return
+              const rect = (e.target as HTMLElement).getBoundingClientRect()
+              const containerRect = (e.target as HTMLElement).closest('.heatmap-container')?.getBoundingClientRect()
+              const text = amount
+                ? `${date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} · ₹${amount.toLocaleString('en-IN')}`
+                : `${date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} · No expenses`
+              setTooltip(prev =>
+                prev?.text === text ? null : { text, x: rect.left - (containerRect?.left || 0), y: rect.top - (containerRect?.top || 0) - 36 }
+              )
+            }}
             style={{
               width: '11px',
               height: '11px',
               borderRadius: '2px',
               backgroundColor: isFuture ? 'transparent' : color || '#161616',
               border: (!isFuture && !color) ? '1px solid #222' : 'none',
-              flexShrink: 0
+              flexShrink: 0,
+              cursor: isFuture ? 'default' : 'pointer'
             }}
           />
         )
@@ -136,17 +163,48 @@ export default function ReportsPage() {
           ))}
         </div>
 
-        {/* Grid */}
-        <div style={{ display: 'flex', gap: '4px', alignItems: 'flex-start' }}>
-          {/* Day labels */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginRight: '4px', paddingTop: '0px' }}>
-            {['','M','','W','','F',''].map((d, i) => (
-              <div key={i} style={{ fontSize: '9px', color: '#444', height: '11px', lineHeight: '11px', width: '14px' }}>{d}</div>
-            ))}
-          </div>
-          {/* Columns */}
-          <div style={{ display: 'flex', gap: '3px', overflowX: 'auto', paddingBottom: '4px' }}>
-            {cols}
+        {/* Grid + Tooltip wrapper */}
+        <div
+          className="heatmap-container"
+          style={{ position: 'relative' }}
+          onClick={(e) => {
+            if (!(e.target as HTMLElement).closest('.hm-cell')) {
+              setTooltip(null)
+            }
+          }}
+        >
+          {/* Tooltip */}
+          {tooltip && (
+            <div style={{
+              position: 'absolute',
+              left: `${tooltip.x}px`,
+              top: `${tooltip.y}px`,
+              backgroundColor: '#1E1E1E',
+              border: '1px solid #2A2A2A',
+              borderRadius: '8px',
+              padding: '6px 10px',
+              fontSize: '12px',
+              color: '#E8E4DC',
+              pointerEvents: 'none',
+              zIndex: 50,
+              whiteSpace: 'nowrap',
+              fontFamily: 'var(--font-geist-mono)'
+            }}>
+              {tooltip.text}
+            </div>
+          )}
+
+          <div style={{ display: 'flex', gap: '4px', alignItems: 'flex-start' }}>
+            {/* Day labels */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginRight: '4px', paddingTop: '0px' }}>
+              {['','M','','W','','F',''].map((d, i) => (
+                <div key={i} style={{ fontSize: '9px', color: '#444', height: '11px', lineHeight: '11px', width: '14px' }}>{d}</div>
+              ))}
+            </div>
+            {/* Columns */}
+            <div style={{ display: 'flex', gap: '3px', overflowX: 'auto', paddingBottom: '4px' }}>
+              {cols}
+            </div>
           </div>
         </div>
 
