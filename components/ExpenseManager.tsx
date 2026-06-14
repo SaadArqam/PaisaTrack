@@ -30,6 +30,15 @@ export function ExpenseManager({ categories, initialExpenses }: { categories: Ca
   const [categoryId, setCategoryId] = useState('')
   const [errorMsg, setErrorMsg] = useState('')
 
+  // Local category list — seeded from server prop, updated after inline creation
+  const [categoryList, setCategoryList] = useState<Category[]>(categories)
+
+  // Inline create-category state
+  const [showNewCategory, setShowNewCategory] = useState(false)
+  const [newCatName, setNewCatName] = useState('')
+  const [newCatEmoji, setNewCatEmoji] = useState('💰')
+  const [creatingCat, setCreatingCat] = useState(false)
+
   const [isRecurring, setIsRecurring] = useState(false)
   const [recurringName, setRecurringName] = useState('')
   const [recurringNextDue, setRecurringNextDue] = useState(getDefaultNextDueDate())
@@ -122,6 +131,38 @@ export function ExpenseManager({ categories, initialExpenses }: { categories: Ca
     }
   }
 
+  async function handleCreateCategory() {
+    if (!newCatName.trim()) return
+    setCreatingCat(true)
+    try {
+      const res = await fetch('/api/categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newCatName.trim(), icon: newCatEmoji || '💰' }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        toast.error(data.error || 'Failed to create category')
+        return
+      }
+      // Refetch the full category list
+      const listRes = await fetch('/api/categories')
+      const listData = await listRes.json()
+      setCategoryList(Array.isArray(listData) ? listData : categoryList)
+      // Auto-select the newly created category
+      setCategoryId(data.id)
+      // Reset and close form
+      setNewCatName('')
+      setNewCatEmoji('💰')
+      setShowNewCategory(false)
+      toast.success('Category created')
+    } catch {
+      toast.error('Failed to create category')
+    } finally {
+      setCreatingCat(false)
+    }
+  }
+
   async function handleDelete(id: string) {
     if (!confirm('Are you sure you want to delete this expense?')) return
 
@@ -168,12 +209,23 @@ export function ExpenseManager({ categories, initialExpenses }: { categories: Ca
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="category">Category</Label>
-                <Select value={categoryId} onValueChange={(val) => setCategoryId(val || '')}>
+                <Select
+                  value={categoryId}
+                  onValueChange={(val) => {
+                    if (val === '__new__') {
+                      setShowNewCategory(true)
+                      // Don't set __new__ as the real value
+                    } else {
+                      setCategoryId(val || '')
+                      setShowNewCategory(false)
+                    }
+                  }}
+                >
                   <SelectTrigger id="category">
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent>
-                    {categories.map(cat => (
+                    {categoryList.map(cat => (
                       <SelectItem key={cat.id} value={cat.id}>
                         <span className="flex items-center gap-2">
                           <span>{cat.icon}</span>
@@ -181,8 +233,76 @@ export function ExpenseManager({ categories, initialExpenses }: { categories: Ca
                         </span>
                       </SelectItem>
                     ))}
+                    <SelectItem value="__new__">
+                      <span style={{ color: '#E8B84B', fontWeight: 600 }}>+ Create new category</span>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
+
+                {/* Inline create-category form */}
+                {showNewCategory && (
+                  <div style={{
+                    backgroundColor: '#161616',
+                    border: '1px solid #2A2A2A',
+                    borderRadius: '12px',
+                    padding: '12px',
+                    marginTop: '8px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px'
+                  }}>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <input
+                        value={newCatEmoji}
+                        onChange={e => setNewCatEmoji(e.target.value)}
+                        placeholder="💰"
+                        style={{
+                          width: '50px', height: '40px', textAlign: 'center', fontSize: '18px',
+                          backgroundColor: '#0C0C0C', border: '1px solid #222',
+                          borderRadius: '8px', color: '#E8E4DC', outline: 'none'
+                        }}
+                      />
+                      <input
+                        value={newCatName}
+                        onChange={e => setNewCatName(e.target.value)}
+                        placeholder="Category name"
+                        onKeyDown={e => { if (e.key === 'Enter' && newCatName.trim()) handleCreateCategory() }}
+                        style={{
+                          flex: 1, height: '40px', backgroundColor: '#0C0C0C',
+                          border: '1px solid #222', borderRadius: '8px',
+                          padding: '0 12px', color: '#E8E4DC', fontSize: '13px', outline: 'none'
+                        }}
+                      />
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button
+                        onClick={handleCreateCategory}
+                        disabled={!newCatName.trim() || creatingCat}
+                        style={{
+                          flex: 1, height: '38px', backgroundColor: '#E8B84B', color: '#0C0C0C',
+                          border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 600,
+                          cursor: !newCatName.trim() || creatingCat ? 'not-allowed' : 'pointer',
+                          opacity: !newCatName.trim() || creatingCat ? 0.6 : 1,
+                        }}
+                      >
+                        {creatingCat ? 'Creating...' : 'Create'}
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowNewCategory(false)
+                          setNewCatName('')
+                          setNewCatEmoji('💰')
+                        }}
+                        style={{
+                          flex: 1, height: '38px', backgroundColor: 'transparent', color: '#666',
+                          border: '1px solid #222', borderRadius: '8px', fontSize: '13px', cursor: 'pointer'
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="amount">Amount (₹)</Label>
